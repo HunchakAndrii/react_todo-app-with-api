@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { FilterType } from '../../types/FilterType';
 import classNames from 'classnames';
 import { deleteTodo } from '../../api/todos';
@@ -7,19 +6,13 @@ import { FooterType } from '../../types/FooterType';
 export const Footer: React.FC<FooterType> = ({
   todos,
   setTodos,
+  currentFilter,
   setCurrentFilter,
   setError,
   setIsLoadingIds,
 }) => {
-  const [activeFilter, setActiveFilter] = useState<string>(FilterType.All);
-
   const completedTodos = todos.filter(todo => todo.completed);
   const TodoCount = todos.length - completedTodos.length;
-
-  const handleFilterChange = (filterType: FilterType) => {
-    setActiveFilter(filterType);
-    setCurrentFilter(filterType);
-  };
 
   const handleClearComplete = () => {
     const completedTodoIds = completedTodos.map(todo => todo.id);
@@ -53,10 +46,10 @@ export const Footer: React.FC<FooterType> = ({
         <a
           href="#/"
           className={classNames('filter__link', {
-            selected: activeFilter === FilterType.All,
+            selected: currentFilter === FilterType.All,
           })}
           data-cy="FilterLinkAll"
-          onClick={() => handleFilterChange(FilterType.All)}
+          onClick={() => setCurrentFilter(FilterType.All)}
         >
           All
         </a>
@@ -64,10 +57,10 @@ export const Footer: React.FC<FooterType> = ({
         <a
           href="#/active"
           className={classNames('filter__link', {
-            selected: activeFilter === FilterType.Active,
+            selected: currentFilter === FilterType.Active,
           })}
           data-cy="FilterLinkActive"
-          onClick={() => handleFilterChange(FilterType.Active)}
+          onClick={() => setCurrentFilter(FilterType.Active)}
         >
           Active
         </a>
@@ -75,10 +68,10 @@ export const Footer: React.FC<FooterType> = ({
         <a
           href="#/completed"
           className={classNames('filter__link', {
-            selected: activeFilter === FilterType.Completed,
+            selected: currentFilter === FilterType.Completed,
           })}
           data-cy="FilterLinkCompleted"
-          onClick={() => handleFilterChange(FilterType.Completed)}
+          onClick={() => setCurrentFilter(FilterType.Completed)}
         >
           Completed
         </a>

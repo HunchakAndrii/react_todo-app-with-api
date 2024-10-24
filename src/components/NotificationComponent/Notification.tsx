@@ -1,17 +1,21 @@
 import classNames from 'classnames';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { NotificationProps } from '../../types/NotificationProps';
 
 export const Notification: React.FC<NotificationProps> = ({
   error,
   setError,
 }) => {
+  const [isVisible, setIsVisible] = useState(false);
+
   useEffect(() => {
     let timer: number;
 
     if (error) {
+      setIsVisible(true);
       timer = window.setTimeout(() => {
-        setError('');
+        setIsVisible(false);
+        // setError('');
       }, 3000);
     }
 
@@ -25,14 +29,14 @@ export const Notification: React.FC<NotificationProps> = ({
       data-cy="ErrorNotification"
       className={classNames(
         'notification is-danger is-light has-text-weight-normal',
-        { hidden: !error },
+        { hidden: !isVisible },
       )}
     >
       <button
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => setError('')}
+        onClick={() => setIsVisible(false)}
       />
       {error}
     </div>

@@ -18,63 +18,6 @@ export const TodoItem: React.FC<TodoItemProps> = ({
 
   const editingInput = useRef<HTMLInputElement>(null);
 
-  // function toggleCompletedTodo() {
-  //   setIsLoadingIds(currentIds => [...currentIds, todo.id]);
-
-  //   const updatedTodo = { ...todo, completed: !todo.completed };
-
-  //   updateTodo(updatedTodo)
-  //     .then(updatedTodoFromServer => {
-  //       setTodos(currentToDos =>
-  //         currentToDos.map(item =>
-  //           item.id === updatedTodoFromServer.id ? updatedTodoFromServer : item,
-  //         ),
-  //       );
-  //     })
-  //     .catch(() => {
-  //       setError('Unable to update a todo');
-  //     })
-  //     .finally(() => {
-  //       setIsLoadingIds(currentIds => currentIds.filter(id => id !== todo.id));
-  //     });
-  // }
-
-  // function renameTodo(e: React.FormEvent) {
-  //   e.preventDefault();
-
-  //   if (newTitle.trim() === todo.title) {
-  //     setIsEditing(false);
-
-  //     return;
-  //   }
-
-  //   if (newTitle.trim() === '') {
-  //     deleteTodoItem(todo.id, todos, setTodos, setError, setIsLoadingIds);
-
-  //     return;
-  //   }
-
-  //   setIsLoadingIds(currentIds => [...currentIds, todo.id]);
-
-  //   const updatedTodo = { ...todo, title: newTitle.trim() };
-
-  //   updateTodo(updatedTodo)
-  //     .then(updatedTodoFromServer => {
-  //       setTodos(currentToDos =>
-  //         currentToDos.map(currentTodo =>
-  //           currentTodo.id === updatedTodoFromServer.id
-  //             ? updatedTodoFromServer
-  //             : currentTodo,
-  //         ),
-  //       );
-  //       setIsEditing(false);
-  //     })
-  //     .catch(() => setError('Unable to update a todo'))
-  //     .finally(() => {
-  //       setIsLoadingIds(currentIds => currentIds.filter(id => id !== todo.id));
-  //     });
-  // }
-
   useEffect(() => {
     const handleKeyUp = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {

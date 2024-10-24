@@ -58,6 +58,7 @@ export const App: React.FC = () => {
           <Footer
             todos={todos}
             setTodos={setTodos}
+            currentFilter={currentFilter}
             setCurrentFilter={setCurrentFilter}
             setError={setError}
             setIsLoadingIds={setIsLoadingIds}
