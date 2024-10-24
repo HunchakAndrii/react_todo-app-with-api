@@ -1,16 +1,5 @@
 import { TodoItem } from '../TodoItem/TodoItem';
-import { Todo } from '../../types/Todo';
-import { Dispatch, SetStateAction } from 'react';
-
-type TodoListProps = {
-  todos: Todo[];
-  setTodos: Dispatch<SetStateAction<Todo[]>>;
-  tempTodo?: Todo | null;
-  setTempTodo?: Dispatch<SetStateAction<Todo | null>>;
-  setError: Dispatch<SetStateAction<string>>;
-  isLoadingIds: number[];
-  setIsLoadingIds: Dispatch<SetStateAction<number[]>>;
-};
+import { TodoListProps } from '../../types/TodoListProps';
 
 export const TodoList: React.FC<TodoListProps> = ({
   todos,

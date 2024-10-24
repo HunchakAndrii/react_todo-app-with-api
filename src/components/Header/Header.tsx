@@ -1,18 +1,8 @@
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
-import { Todo } from '../../types/Todo';
-// import { addTodo } from '../../utils/addTodo';
+import { useEffect, useRef, useState } from 'react';
+import { addTodo } from '../../utils/addTodo';
 import { toggleCompletedTodo } from '../../utils/toggleTodo';
-import { createTodo } from '../../api/todos';
-
-type HeaderProps = {
-  todos: Todo[];
-  setTodos: Dispatch<SetStateAction<Todo[]>>;
-  setTempTodo: Dispatch<SetStateAction<Todo | null>>;
-  error: string;
-  setError: Dispatch<SetStateAction<string>>;
-  isLoadingIds: number[];
-  setIsLoadingIds: Dispatch<SetStateAction<number[]>>;
-};
+import classNames from 'classnames';
+import { HeaderProps } from '../../types/HeaderProps';
 
 export const Header: React.FC<HeaderProps> = ({
   todos,
@@ -35,57 +25,14 @@ export const Header: React.FC<HeaderProps> = ({
   function handleAddTodo(event: React.FormEvent) {
     event.preventDefault();
 
-    setError('');
-
-    if (inputValue.trim() === '') {
-      setError('Title should not be empty');
-
-      return;
-    }
-
-    const newTempTodo: Todo = {
-      id: 0,
-      userId: 1551,
-      title: inputValue.trim(),
-      completed: false,
-    };
-
-    setTempTodo(newTempTodo);
-
-    const newTodo: Omit<Todo, 'id'> = {
-      userId: 1551,
-      title: inputValue.trim(),
-      completed: false,
-    };
-
-    setIsLoadingIds(currentIds => [...currentIds, newTempTodo.id]);
-
-    createTodo(newTodo)
-      .then(currentNewTodo => {
-        setTodos(currentToDos => [...currentToDos, currentNewTodo]);
-        setInputValue('');
-        setTempTodo(null);
-        setError('');
-      })
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      .catch(() => {
-        setTempTodo(null);
-        setError('Unable to add a todo');
-      })
-      .finally(() => {
-        setIsLoadingIds(currentIds =>
-          currentIds.filter(id => id !== newTempTodo.id),
-        );
-      });
-
-    // addTodo(
-    //   inputValue,
-    //   setError,
-    //   setTempTodo,
-    //   setTodos,
-    //   setInputValue,
-    //   setIsLoadingIds,
-    // );
+    addTodo(
+      inputValue,
+      setError,
+      setTempTodo,
+      setTodos,
+      setInputValue,
+      setIsLoadingIds,
+    );
   }
 
   const completeAllTodo = () => {
@@ -110,15 +57,17 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="todoapp__header">
-      {/* this button should have `active` class only if all todos are completed */}
-      <button
-        type="button"
-        className="todoapp__toggle-all active"
-        data-cy="ToggleAllButton"
-        onClick={completeAllTodo}
-      />
+      {todos.length > 0 && (
+        <button
+          type="button"
+          className={classNames('todoapp__toggle-all', {
+            active: isCompletedAll,
+          })}
+          data-cy="ToggleAllButton"
+          onClick={completeAllTodo}
+        />
+      )}
 
-      {/* Add a todo on form submit */}
       <form onSubmit={handleAddTodo}>
         <input
           ref={titleInput}

@@ -1,10 +1,6 @@
 import classNames from 'classnames';
-import { Dispatch, SetStateAction, useEffect } from 'react';
-
-type NotificationProps = {
-  error: string;
-  setError: Dispatch<SetStateAction<string>>;
-};
+import { useEffect } from 'react';
+import { NotificationProps } from '../../types/NotificationProps';
 
 export const Notification: React.FC<NotificationProps> = ({
   error,

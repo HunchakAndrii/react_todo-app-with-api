@@ -1,17 +1,8 @@
-import { Dispatch, SetStateAction, useState } from 'react';
-import { Todo } from '../../types/Todo';
+import { useState } from 'react';
 import { FilterType } from '../../types/FilterType';
 import classNames from 'classnames';
 import { deleteTodo } from '../../api/todos';
-// import { deleteTodoItem } from '../../utils/deleteTodoItem';
-
-type FooterType = {
-  todos: Todo[];
-  setTodos: Dispatch<SetStateAction<Todo[]>>;
-  setCurrentFilter: (filter: FilterType) => void;
-  setError: Dispatch<SetStateAction<string>>;
-  setIsLoadingIds: Dispatch<SetStateAction<number[]>>;
-};
+import { FooterType } from '../../types/FooterType';
 
 export const Footer: React.FC<FooterType> = ({
   todos,

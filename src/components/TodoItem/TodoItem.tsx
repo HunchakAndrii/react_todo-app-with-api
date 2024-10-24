@@ -1,23 +1,9 @@
-import { Todo } from '../../types/Todo';
 import classNames from 'classnames';
-import React, {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { deleteTodoItem } from '../../utils/deleteTodoItem';
-import { updateTodo } from '../../api/todos';
-
-type TodoItemProps = {
-  todo: Todo;
-  todos: Todo[];
-  setTodos: Dispatch<SetStateAction<Todo[]>>;
-  setError: Dispatch<SetStateAction<string>>;
-  isLoadingIds: number[];
-  setIsLoadingIds: Dispatch<SetStateAction<number[]>>;
-};
+import { toggleCompletedTodo } from '../../utils/toggleTodo';
+import { renameTodo } from '../../utils/renameTodo';
+import { TodoItemProps } from '../../types/TodoItemProps';
 
 export const TodoItem: React.FC<TodoItemProps> = ({
   todo,
@@ -32,69 +18,76 @@ export const TodoItem: React.FC<TodoItemProps> = ({
 
   const editingInput = useRef<HTMLInputElement>(null);
 
-  function toggleCompletedTodo() {
-    setIsLoadingIds(currentIds => [...currentIds, todo.id]);
+  // function toggleCompletedTodo() {
+  //   setIsLoadingIds(currentIds => [...currentIds, todo.id]);
 
-    const updatedTodo = { ...todo, completed: !todo.completed };
+  //   const updatedTodo = { ...todo, completed: !todo.completed };
 
-    updateTodo(updatedTodo)
-      .then(updatedTodoFromServer => {
-        setTodos(currentToDos =>
-          currentToDos.map(item =>
-            item.id === updatedTodoFromServer.id ? updatedTodoFromServer : item,
-          ),
-        );
-      })
-      .catch(() => {
-        setError('Unable to update todo');
-      })
-      .finally(() => {
-        setIsLoadingIds(currentIds => currentIds.filter(id => id !== todo.id));
-      });
-  }
+  //   updateTodo(updatedTodo)
+  //     .then(updatedTodoFromServer => {
+  //       setTodos(currentToDos =>
+  //         currentToDos.map(item =>
+  //           item.id === updatedTodoFromServer.id ? updatedTodoFromServer : item,
+  //         ),
+  //       );
+  //     })
+  //     .catch(() => {
+  //       setError('Unable to update a todo');
+  //     })
+  //     .finally(() => {
+  //       setIsLoadingIds(currentIds => currentIds.filter(id => id !== todo.id));
+  //     });
+  // }
 
-  function renameTodo() {
-    if (newTitle.trim() === todo.title) {
-      setIsEditing(false);
+  // function renameTodo(e: React.FormEvent) {
+  //   e.preventDefault();
 
-      return;
-    }
+  //   if (newTitle.trim() === todo.title) {
+  //     setIsEditing(false);
 
-    if (newTitle.trim() === '') {
-      deleteTodoItem(todo.id, todos, setTodos, setError, setIsLoadingIds);
+  //     return;
+  //   }
 
-      return;
-    }
+  //   if (newTitle.trim() === '') {
+  //     deleteTodoItem(todo.id, todos, setTodos, setError, setIsLoadingIds);
 
-    setIsLoadingIds(currentIds => [...currentIds, todo.id]);
+  //     return;
+  //   }
 
-    const updatedTodo = { ...todo, title: newTitle.trim() };
+  //   setIsLoadingIds(currentIds => [...currentIds, todo.id]);
 
-    updateTodo(updatedTodo)
-      .then(updatedTodoFromServer => {
-        setTodos(currentToDos =>
-          currentToDos.map(currentTodo =>
-            currentTodo.id === updatedTodoFromServer.id
-              ? updatedTodoFromServer
-              : currentTodo,
-          ),
-        );
-      })
-      .catch(() => setError('Unable to update todo'))
-      .finally(() => {
-        setIsLoadingIds(currentIds => currentIds.filter(id => id !== todo.id));
-      });
+  //   const updatedTodo = { ...todo, title: newTitle.trim() };
 
-    setIsEditing(false);
-  }
+  //   updateTodo(updatedTodo)
+  //     .then(updatedTodoFromServer => {
+  //       setTodos(currentToDos =>
+  //         currentToDos.map(currentTodo =>
+  //           currentTodo.id === updatedTodoFromServer.id
+  //             ? updatedTodoFromServer
+  //             : currentTodo,
+  //         ),
+  //       );
+  //       setIsEditing(false);
+  //     })
+  //     .catch(() => setError('Unable to update a todo'))
+  //     .finally(() => {
+  //       setIsLoadingIds(currentIds => currentIds.filter(id => id !== todo.id));
+  //     });
+  // }
 
-  const cancelEditing = () => {
-    window.addEventListener('keyup', e => {
+  useEffect(() => {
+    const handleKeyUp = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setIsEditing(false);
       }
-    });
-  };
+    };
+
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
 
   useEffect(() => {
     editingInput.current?.focus();
@@ -116,12 +109,27 @@ export const TodoItem: React.FC<TodoItemProps> = ({
           type="checkbox"
           className="todo__status"
           checked={todo.completed}
-          onChange={() => toggleCompletedTodo()}
+          onChange={() =>
+            toggleCompletedTodo(todo, setIsLoadingIds, setTodos, setError)
+          }
         />
       </label>
 
       {isEditing ? (
-        <form onSubmit={renameTodo}>
+        <form
+          onSubmit={e => {
+            renameTodo(
+              e,
+              newTitle,
+              todo,
+              todos,
+              setTodos,
+              setIsEditing,
+              setIsLoadingIds,
+              setError,
+            );
+          }}
+        >
           <input
             ref={editingInput}
             disabled={isLoadingIds.length > 0}
@@ -131,8 +139,18 @@ export const TodoItem: React.FC<TodoItemProps> = ({
             placeholder="Empty todo will be deleted"
             value={newTitle}
             onChange={e => setNewTitle(e.target.value)}
-            onBlur={renameTodo}
-            onKeyUp={cancelEditing}
+            onBlur={e => {
+              renameTodo(
+                e,
+                newTitle,
+                todo,
+                todos,
+                setTodos,
+                setIsEditing,
+                setIsLoadingIds,
+                setError,
+              );
+            }}
           />
         </form>
       ) : (

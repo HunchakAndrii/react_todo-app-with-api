@@ -21,9 +21,7 @@ export function toggleCompletedTodo(
       );
     })
     .catch(() => {
-      setTimeout(() => {
-        setError('Unable to update todo');
-      }, 1000);
+      setError('Unable to update a todo');
     })
     .finally(() => {
       setIsLoadingIds(currentIds =>
